@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """DevPulse MCP Server - Activity Intelligence for Claude Code"""
 
+import os
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Optional
@@ -9,7 +10,12 @@ from mcp.server.fastmcp import FastMCP
 mcp = FastMCP("devpulse")
 
 def get_devpulse_dir() -> Path:
-    return Path.cwd() / ".devpulse"
+    """Общая папка ~/.devpulse/"""
+    return Path.home() / ".devpulse"
+
+def get_project_name() -> str:
+    """Определить имя проекта из cwd"""
+    return Path.cwd().name
 
 def ensure_dirs():
     d = get_devpulse_dir()
@@ -45,7 +51,7 @@ def get_sessions(date: Optional[str] = None, project: Optional[str] = None, days
     for f in sorted(sessions_dir.glob("*.md"), reverse=True):
         if not any(d in f.name for d in dates):
             continue
-        if project and not f.name.startswith(project):
+        if project and not f.name.upper().startswith(project.upper()):
             continue
         results.append(f"### {f.name}\n{f.read_text(encoding='utf-8')}")
     return "\n---\n".join(results) if results else "Нет сессий за период"
@@ -81,6 +87,23 @@ def what_i_did(period: str = "today") -> str:
     if period not in ("today", "сегодня"):
         return get_sessions(days=30, project=period.upper())
     return get_sessions(days=1)
+
+@mcp.tool()
+def list_projects() -> str:
+    """Список всех проектов с количеством сессий"""
+    sessions_dir = get_devpulse_dir() / "sessions"
+    if not sessions_dir.exists():
+        return "Нет сессий"
+    projects = {}
+    for f in sessions_dir.glob("*.md"):
+        proj = f.name.split("_")[0]
+        projects[proj] = projects.get(proj, 0) + 1
+    if not projects:
+        return "Нет проектов"
+    result = "## Проекты\n"
+    for p, count in sorted(projects.items(), key=lambda x: -x[1]):
+        result += f"- **{p}**: {count} сессий\n"
+    return result
 
 if __name__ == "__main__":
     mcp.run()

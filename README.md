@@ -2,7 +2,7 @@
 
 Activity Intelligence для Claude Code. Логирование сессий работы.
 
-## Установка в Claude Code
+## Установка
 
 Добавь в `~/.claude/settings.json`:
 
@@ -27,30 +27,36 @@ Activity Intelligence для Claude Code. Логирование сессий р
 | `get_sessions` | Получить логи за период |
 | `daily_report` | Дневной отчёт |
 | `what_i_did` | Что делал (today/yesterday/week/PROJECT) |
+| `list_projects` | Список проектов |
 
 ## Использование
 
 ```
-> Залогируй: FINANCE, проблема DPO 526 дней, причина all-time vs год, сделал period filter, результат 321 день
+> Залогируй: FINANCE, проблема DPO 526 дней, причина all-time vs год...
 
 > Что я делал вчера?
 
 > Дневной отчёт
+
+> Список проектов
 ```
 
-## Структура логов
+## Структура
+
+Все логи в **общей папке** `~/.devpulse/`:
 
 ```
-./project/
-├── .devpulse/
-│   ├── sessions/
-│   │   └── FINANCE_2026-01-14_10-30_dpo-fix.md
-│   └── reports/daily/
-│       └── 2026-01-14.md
-└── ...
+~/.devpulse/
+├── sessions/
+│   ├── FINANCE_2026-01-14_10-30_dpo-fix.md
+│   ├── B2C_2026-01-14_12-00_chat.md
+│   └── CRM_2026-01-14_15-30_api.md
+└── reports/
+    └── daily/
+        └── 2026-01-14.md
 ```
 
-Добавь `.devpulse/` в `.gitignore`.
+Готово для синхронизации с облаком.
 
 ---
 DevPulse · Activity Intelligence for Tech Leads
